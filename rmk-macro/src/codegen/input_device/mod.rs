@@ -4,10 +4,10 @@ use pmw33xx::expand_pmw33xx_device;
 use pmw3610::expand_pmw3610_device;
 use proc_macro2::{Ident, TokenStream};
 use quote::quote;
-use rmk_config::resolved::Hardware;
 use rmk_config::resolved::hardware::{
     BleConfig, BoardConfig, CommunicationConfig, InputDeviceConfig, UniBodyConfig,
 };
+use rmk_config::resolved::{Behavior, Hardware};
 
 pub(crate) mod adc;
 pub(crate) mod encoder;
@@ -24,6 +24,7 @@ pub(crate) struct Initializer {
 /// Returns a tuple containing: (device_and_processors_initialization, devices, processors)
 pub(crate) fn expand_input_device_config(
     hardware: &Hardware,
+    behavior: &Behavior,
 ) -> (TokenStream, Vec<TokenStream>, Vec<TokenStream>) {
     let mut initialization = TokenStream::new();
     let mut devices = Vec::new();
@@ -239,6 +240,25 @@ pub(crate) fn expand_input_device_config(
                 processors.push(quote! { #processor_name });
             }
         }
+    }
+
+    // Generate AutoMouseLayerProcessor if configured in behavior
+    if let Some(aml) = &behavior.auto_mouse_layer {
+        let idx = aml.mouse_layer_index;
+        let activate_ms = aml.activate_after_ms;
+        let deactivate_ms = aml.deactivate_after_ms;
+        initialization.extend(quote! {
+            let mut auto_mouse_layer_processor =
+                ::rmk::input_device::auto_mouse_layer::AutoMouseLayerProcessor::new(
+                    &keymap,
+                    ::rmk::config::AutoMouseLayerConfig {
+                        mouse_layer_index: #idx,
+                        activate_after: ::embassy_time::Duration::from_millis(#activate_ms),
+                        deactivate_after: ::embassy_time::Duration::from_millis(#deactivate_ms),
+                    },
+                );
+        });
+        processors.push(quote! { auto_mouse_layer_processor });
     }
 
     (initialization, devices, processors)

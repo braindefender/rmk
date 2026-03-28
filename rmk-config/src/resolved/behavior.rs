@@ -9,6 +9,16 @@ pub struct Behavior {
     pub macros: Option<Macros>,
     pub forks: Option<Forks>,
     pub morse: Option<Morse>,
+    pub auto_mouse_layer: Option<AutoMouseLayer>,
+}
+
+/// Resolved auto mouse layer configuration.
+pub struct AutoMouseLayer {
+    pub mouse_layer_index: u8,
+    /// How long the trackball must move before the layer activates (milliseconds, default: 0 = immediate)
+    pub activate_after_ms: u64,
+    /// How long after the last movement before the layer deactivates (milliseconds, default: 1000)
+    pub deactivate_after_ms: u64,
 }
 
 pub struct OneShot {
@@ -197,6 +207,12 @@ impl crate::KeyboardTomlConfig {
             }
         });
 
+        let auto_mouse_layer = toml_behavior.auto_mouse_layer.map(|aml| AutoMouseLayer {
+            mouse_layer_index: aml.mouse_layer_index,
+            activate_after_ms: aml.activate_after_ms.map(|d| d.0).unwrap_or(0),
+            deactivate_after_ms: aml.deactivate_after_ms.map(|d| d.0).unwrap_or(1000),
+        });
+
         Ok(Behavior {
             tri_layer,
             one_shot_timeout_ms,
@@ -205,6 +221,7 @@ impl crate::KeyboardTomlConfig {
             macros,
             forks,
             morse,
+            auto_mouse_layer,
         })
     }
 }

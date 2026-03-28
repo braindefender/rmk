@@ -4,6 +4,7 @@
 //! The `InputDevice` trait provides the interface for individual input devices, and the macros facilitate their concurrent execution.
 
 pub mod adc;
+pub mod auto_mouse_layer;
 #[cfg(feature = "_ble")]
 pub mod battery;
 pub mod joystick;

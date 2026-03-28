@@ -19,6 +19,18 @@ pub struct BehaviorConfig {
     pub morse: MorsesConfig,
     pub keyboard_macros: KeyboardMacrosConfig,
     pub mouse_key: MouseKeyConfig,
+    pub auto_mouse_layer: Option<AutoMouseLayerConfig>,
+}
+
+/// Config for auto mouse layer behavior
+#[derive(Clone, Copy, Debug)]
+pub struct AutoMouseLayerConfig {
+    /// Layer index to activate when the pointing device moves
+    pub mouse_layer_index: u8,
+    /// How long the trackball must move before the layer activates (default: 0 = immediate)
+    pub activate_after: Duration,
+    /// How long after the last movement before the layer deactivates (default: 1000ms)
+    pub deactivate_after: Duration,
 }
 
 /// Configurations for tap behavior

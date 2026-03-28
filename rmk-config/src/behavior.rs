@@ -88,6 +88,15 @@ impl crate::KeyboardTomlConfig {
                             .to_string(),
                     );
                 }
+                behavior.auto_mouse_layer = behavior.auto_mouse_layer.or(default.auto_mouse_layer);
+                if let Some(aml) = &behavior.auto_mouse_layer {
+                    if aml.mouse_layer_index >= layout.layers {
+                        return Err(
+                            "keyboard.toml: auto_mouse_layer.mouse_layer_index is larger than [layout.layers]"
+                                .to_string(),
+                        );
+                    }
+                }
                 Ok(behavior)
             }
             None => Ok(default),

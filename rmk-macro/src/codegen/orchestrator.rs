@@ -226,7 +226,7 @@ fn expand_main(
     let (ble_config, set_ble_config) = expand_ble_config(hardware);
     let keymap_and_storage = expand_keymap_and_storage(hardware, layout);
     let split_central_config = expand_split_central_config(hardware);
-    let (input_device_config, devices, processors) = expand_input_device_config(hardware);
+    let (input_device_config, devices, processors) = expand_input_device_config(hardware, &behavior);
     let matrix_and_keyboard = expand_matrix_and_keyboard_init(hardware);
     let (registered_processor_initializers, registered_processors) =
         expand_registered_processor_init(hardware, &item_mod);
